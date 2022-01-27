@@ -1,0 +1,17 @@
+* Configure apt sources
+
+#First run:
+nano /etc/apt/sources.list
+#Second, remove all lines by "CTRL+K"
+#Third, paste the following lines:
+deb http://ftp.debian.org/debian bullseye main contrib
+
+deb http://ftp.debian.org/debian bullseye-updates main contrib
+
+deb http://security.debian.org/debian-security bullseye-security main contrib
+
+deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
+#Fourth, press "CTRL+X" and "CTRL+Y" to save.
+#Fifth, add a "#" to the first line:
+# deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise
+#Sixth, press "CTRL+X" and "CTRL+Y" to save.
