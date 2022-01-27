@@ -1,2 +1,3 @@
 # proxmox
-Some tips and tricks for running proxmox on your home server.
+Here are some tips and tricks for running proxmox on your home server.
+Currently I own a Hyve Zeuss 1U server running Proxmox 7.1
