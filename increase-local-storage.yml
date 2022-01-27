@@ -1,4 +1,4 @@
-* Increase the Storage on "local" storage.
+Increase the Storage on "local" storage.
 
 #First, navigate to "datacenter -> storage"
 #Second, delete the "local-lvm" storage 

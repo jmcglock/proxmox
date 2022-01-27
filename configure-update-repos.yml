@@ -1,4 +1,4 @@
-* Configure apt sources
+Configure apt sources
 
 #First run:
 nano /etc/apt/sources.list
