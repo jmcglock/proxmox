@@ -12,6 +12,8 @@ deb http://security.debian.org/debian-security bullseye-security main contrib
 
 deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription
 #Fourth, press "CTRL+X" and "CTRL+Y" to save.
-#Fifth, add a "#" to the first line:
+#Fifth, run:
+nano /etc/apt/sources.list.d/pve-enterprise.list
+#Sixth, add a "#" to the first line: 
 # deb https://enterprise.proxmox.com/debian/pve bullseye pve-enterprise
 #Sixth, press "CTRL+X" and "CTRL+Y" to save.
