@@ -1,0 +1,14 @@
+nano /etc/default/grub
+
+GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"
+update-grub
+
+nano /etc/modules
+
+vfio
+vfio_iommu_type1
+vfio_pci
+vfio_virqfd
+update-initramfs -u -k all
+
+reboot
