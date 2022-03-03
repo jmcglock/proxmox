@@ -1,25 +1,19 @@
 Common ISO Images to Download
 
-website:
   name: Ubuntu Server 21.10
   url:  https://ubuntu.com/download/server
 
-website:
   name: Ubuntu Server 20.04
   url:  https://ubuntu.com/download/server
 
-website:
   name: pfSense
   url:  https://www.pfsense.org/download/
 
-website:
   name: Windows 11
   url:  https://www.microsoft.com/en-us/software-download/windows11
 
-website:
   name: Windows 10
   url:  https://www.microsoft.com/en-us/software-download/windows10ISO
 
-website:
   name: Windows 10
   url:  https://www.microsoft.com/en-us/software-download/windows10ISO
