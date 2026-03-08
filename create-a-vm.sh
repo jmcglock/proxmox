@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Script to create a VM in Proxmox
-# Usage: ./create_vm.sh <VM_ID> <VM_NAME> [OPTIONS]
+# Script to create a VM in Proxmox by cloning a template
+# Usage: ./create-a-vm.sh <VM_ID> <VM_NAME> [OPTIONS]
 
-# Exit on any error
-set -e
+# Exit on any error, unbound variables, and pipe failures
+set -euo pipefail
 
 # Function to display usage
 usage() {
@@ -19,6 +19,12 @@ usage() {
     echo "  $0 100 my-vm --storage local-lvm --template 9000"
     exit 1
 }
+
+# Check if running as root
+if [ "$(id -u)" != "0" ]; then
+    echo "Error: This script must be run as root"
+    exit 1
+fi
 
 # Check for minimum required arguments
 if [ $# -lt 2 ]; then
@@ -106,22 +112,19 @@ echo "Network Bridge: $VM_BRIDGE"
 # Check if VM already exists
 check_vm_exists
 
-# Create the VM
-echo "Creating VM..."
-qm create "$VM_ID" \
+# Clone the template to create the VM
+echo "Cloning template $VM_TEMPLATE to VM $VM_ID..."
+qm clone "$VM_TEMPLATE" "$VM_ID" \
     --name "$VM_NAME" \
+    --full \
+    --storage "$VM_STORAGE"
+
+# Configure the cloned VM
+echo "Configuring VM..."
+qm set "$VM_ID" \
     --memory "$VM_MEMORY" \
     --cores "$VM_CPU_CORES" \
-    --net0 "virtio,bridge=$VM_BRIDGE" \
-    --serial0 socket \
-    --vga serial0 \
-    --parallel0 none \
-    --storage "$VM_STORAGE" \
-    --template "$VM_TEMPLATE"
-
-# Set the boot order
-echo "Setting boot order..."
-qm set "$VM_ID" --boot c --bootdisk scsi0
+    --net0 "virtio,bridge=$VM_BRIDGE"
 
 echo "VM creation completed successfully!"
 echo "You can start the VM with: qm start $VM_ID"

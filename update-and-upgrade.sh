@@ -3,8 +3,14 @@
 # Update and Upgrade Your Server
 # Script to safely update and upgrade a Proxmox system
 
-# Exit on any error
-set -e
+# Exit on any error, unbound variables, and pipe failures
+set -euo pipefail
+
+# Check if running as root
+if [ "$(id -u)" != "0" ]; then
+    echo "Error: This script must be run as root"
+    exit 1
+fi
 
 echo "Starting system update and upgrade process..."
 
@@ -23,9 +29,9 @@ apt-get update || {
   exit 1
 }
 
-# Upgrade packages
+# Upgrade packages (dist-upgrade handles dependency changes and new kernel packages)
 echo "Upgrading packages..."
-apt-get upgrade -y || {
+apt-get dist-upgrade -y || {
   echo "Failed to upgrade packages"
   exit 1
 }

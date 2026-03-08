@@ -4,8 +4,8 @@
 # IMPORTANT: This script should be run directly on the Proxmox host
 # WARNING: This will delete local-lvm storage. Backup any important data first!
 
-# Exit on any error
-set -e
+# Exit on any error, unbound variables, and pipe failures
+set -euo pipefail
 
 # Function to display error messages and exit
 error_exit() {

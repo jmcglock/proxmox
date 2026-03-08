@@ -3,8 +3,8 @@
 # Script to enable IOMMU for PCI passthrough in Proxmox
 # This script must be run as root
 
-# Exit on any error
-set -e
+# Exit on any error, unbound variables, and pipe failures
+set -euo pipefail
 
 # Function to display error messages and exit
 error_exit() {
@@ -19,6 +19,17 @@ fi
 
 echo "Enabling IOMMU for PCI passthrough..."
 
+# Detect CPU vendor
+if grep -q "GenuineIntel" /proc/cpuinfo; then
+    IOMMU_PARAM="intel_iommu=on"
+    echo "Detected Intel CPU — using intel_iommu=on"
+elif grep -q "AuthenticAMD" /proc/cpuinfo; then
+    IOMMU_PARAM="amd_iommu=on"
+    echo "Detected AMD CPU — using amd_iommu=on"
+else
+    error_exit "Unable to detect CPU vendor (Intel or AMD required)"
+fi
+
 # Backup GRUB configuration
 echo "Creating backup of GRUB configuration..."
 cp /etc/default/grub /etc/default/grub.backup-$(date +%Y%m%d-%H%M%S)
@@ -27,10 +38,10 @@ cp /etc/default/grub /etc/default/grub.backup-$(date +%Y%m%d-%H%M%S)
 echo "Modifying GRUB configuration..."
 if grep -q "^GRUB_CMDLINE_LINUX_DEFAULT=" /etc/default/grub; then
     # Replace existing line
-    sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT=".*"/GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"/' /etc/default/grub
+    sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\".*\"/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet ${IOMMU_PARAM}\"/" /etc/default/grub
 else
     # Add new line if it doesn't exist
-    echo 'GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on"' >> /etc/default/grub
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"quiet ${IOMMU_PARAM}\"" >> /etc/default/grub
 fi
 
 # Update GRUB
@@ -45,8 +56,15 @@ cp /etc/modules /etc/modules.backup-$(date +%Y%m%d-%H%M%S)
 echo "Adding VFIO modules..."
 modules="vfio
 vfio_iommu_type1
-vfio_pci
+vfio_pci"
+
+# vfio_virqfd was merged into the vfio module in kernel 6.2+; skip it on newer kernels
+KERNEL_MAJOR=$(uname -r | cut -d. -f1)
+KERNEL_MINOR=$(uname -r | cut -d. -f2)
+if [ "$KERNEL_MAJOR" -lt 6 ] || { [ "$KERNEL_MAJOR" -eq 6 ] && [ "$KERNEL_MINOR" -lt 2 ]; }; then
+    modules="$modules
 vfio_virqfd"
+fi
 
 # Check if modules are already present and add only if missing
 for module in $modules; do
