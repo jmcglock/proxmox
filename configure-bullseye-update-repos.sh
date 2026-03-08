@@ -1,5 +1,6 @@
 #!/bin/bash
-# This script will configure the apt sources for debian bullseye in Proxmox
+set -euo pipefail
+# This script will configure the apt sources for debian bullseye in Proxmox (PVE 7.x - legacy/EOL)
 
 # Configure apt sources
 echo "deb http://ftp.debian.org/debian bullseye main contrib" > /etc/apt/sources.list

@@ -1,5 +1,6 @@
 #!/bin/bash
-# This script will configure the apt sources for debian bookworm in Proxmox
+set -euo pipefail
+# This script will configure the apt sources for debian bookworm in Proxmox (PVE 8.x)
 
 # Configure apt sources
 echo "deb http://ftp.debian.org/debian bookworm main contrib" > /etc/apt/sources.list
